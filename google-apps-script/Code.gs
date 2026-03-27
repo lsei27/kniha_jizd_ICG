@@ -81,8 +81,8 @@ function jsonResponse(payload) {
 function getCurrentOdometer_(sheet) {
   const lastRow = Math.max(sheet.getLastRow(), 2);
   const values = sheet.getRange(lastRow, 1, 1, 10).getValues()[0];
-  const endOdometer = Number(values[7]);
-  const startOdometer = Number(values[4]);
+  const endOdometer = parseKilometerValue_(values[7]);
+  const startOdometer = parseKilometerValue_(values[4]);
 
   if (isFinite(endOdometer)) {
     return endOdometer;
@@ -93,6 +93,13 @@ function getCurrentOdometer_(sheet) {
   }
 
   throw new Error('V tabulce nebyl nalezen platný počáteční stav tachometru.');
+}
+
+function parseKilometerValue_(value) {
+  if (value === null || value === undefined) return NaN;
+  if (typeof value === 'number') return value;
+  const normalized = String(value).replace(/\s+/g, '').replace(',', '.');
+  return Number(normalized);
 }
 
 function handleStateRequest_(sheetName) {
