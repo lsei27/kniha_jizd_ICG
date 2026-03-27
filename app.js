@@ -116,7 +116,8 @@ async function handleSubmit(event) {
     const result = await response.json();
 
     if (!response.ok) {
-      throw new Error(result.error || "Zápis se nepodařil.");
+      const detail = result.upstream?.error || result.upstream?.raw || "";
+      throw new Error(detail ? `${result.error || "Zápis se nepodařil."} Detail: ${detail}` : result.error || "Zápis se nepodařil.");
     }
 
     state.currentOdometer = result.record.endOdometer;
