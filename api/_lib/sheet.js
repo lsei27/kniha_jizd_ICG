@@ -5,6 +5,10 @@ function getPublicTsvUrl() {
   return process.env.PUBLIC_TSV_URL || DEFAULT_TSV_URL;
 }
 
+function getAppsScriptUrl() {
+  return process.env.GOOGLE_APPS_SCRIPT_URL || "";
+}
+
 async function fetchSheetRows() {
   const response = await fetch(getPublicTsvUrl(), {
     headers: {
@@ -39,6 +43,10 @@ async function fetchSheetRows() {
 }
 
 async function getCurrentState() {
+  if (getAppsScriptUrl()) {
+    return getCurrentStateFromAppsScript();
+  }
+
   const rows = await fetchSheetRows();
   const lastRow = [...rows].reverse().find((row) => {
     return row["TACH. UKONČ."] || row["STAV TACH."];
@@ -57,6 +65,34 @@ async function getCurrentState() {
   return {
     currentOdometer,
     lastRow,
+  };
+}
+
+async function getCurrentStateFromAppsScript() {
+  const url = new URL(getAppsScriptUrl());
+  url.searchParams.set("mode", "state");
+  url.searchParams.set("_", Date.now().toString());
+
+  const response = await fetch(url, {
+    headers: {
+      accept: "application/json,text/plain;q=0.9,*/*;q=0.8",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Nepodařilo se načíst stav z Apps Scriptu (${response.status}).`);
+  }
+
+  const payload = await response.json();
+  const currentOdometer = parseKilometerValue(payload.currentOdometer);
+
+  if (!payload.ok || !Number.isFinite(currentOdometer)) {
+    throw new Error(payload.error || "Apps Script nevrátil platný aktuální stav tachometru.");
+  }
+
+  return {
+    currentOdometer,
+    lastRow: payload.lastRow || null,
   };
 }
 
@@ -110,5 +146,6 @@ function formatTime(date) {
 module.exports = {
   createRecord,
   getCurrentState,
+  getAppsScriptUrl,
   getPublicTsvUrl,
 };

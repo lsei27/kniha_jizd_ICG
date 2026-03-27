@@ -4,7 +4,7 @@ Jednoduchá mobilní appka pro zápis jízd do Google Sheets. Frontend je připr
 
 ## Jak to funguje
 
-1. Frontend na `/` načte poslední stav tachometru z veřejného TSV.
+1. Frontend na `/` načte poslední stav tachometru přes Apps Script přímo z aktuálního posledního řádku v Google Sheetu.
 2. Uživatel vyplní pouze:
    - koncový stav km
    - odkud
@@ -17,11 +17,12 @@ Jednoduchá mobilní appka pro zápis jízd do Google Sheets. Frontend je připr
    - datum
    - čas
 4. Zápis probíhá atomicky přes `LockService`, takže se nesplete ani při rychlém použití po sobě.
+5. Stejný Apps Script vrací i aktuální poslední stav, takže se po reloadu bere opravdu poslední ukončený tachometr, ne opožděný export.
 
 ## Soubory
 
 - `index.html`, `styles.css`, `app.js`: mobilní formulář
-- `api/state.js`: načtení posledního stavu z veřejné tabulky
+- `api/state.js`: načtení posledního stavu přes Apps Script
 - `api/trips.js`: validace a odeslání nového záznamu
 - `google-apps-script/Code.gs`: zapisovací most do Google Sheets
 

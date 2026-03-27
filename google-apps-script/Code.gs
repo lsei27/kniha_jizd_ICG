@@ -63,7 +63,11 @@ function doPost(e) {
   }
 }
 
-function doGet() {
+function doGet(e) {
+  if (e && e.parameter && e.parameter.mode === 'state') {
+    return handleStateRequest_();
+  }
+
   return jsonResponse({ ok: true, service: 'kniha-jizd-writer' });
 }
 
@@ -88,6 +92,35 @@ function getCurrentOdometer_(sheet) {
   }
 
   throw new Error('V tabulce nebyl nalezen platný počáteční stav tachometru.');
+}
+
+function handleStateRequest_() {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+
+  if (!sheet) {
+    return jsonResponse({ ok: false, error: 'Sheet nebyl nalezen. Upravte SHEET_NAME.' });
+  }
+
+  const lastRowIndex = Math.max(sheet.getLastRow(), 2);
+  const values = sheet.getRange(lastRowIndex, 1, 1, 10).getValues()[0];
+  const currentOdometer = getCurrentOdometer_(sheet);
+
+  return jsonResponse({
+    ok: true,
+    currentOdometer: currentOdometer,
+    lastRow: {
+      'DAT.': values[0],
+      'ČAS': values[1],
+      'ODKUD': values[2],
+      'KAM': values[3],
+      'STAV TACH.': values[4],
+      'UJETÉ KM': values[5],
+      'ČAS UKONČ.': values[6],
+      'TACH. UKONČ.': values[7],
+      'DŮVOD': values[8],
+      'KDO': values[9],
+    },
+  });
 }
 
 function createRecord_(payload, currentOdometer, endOdometer) {
