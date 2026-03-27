@@ -1,4 +1,4 @@
-const { getCurrentState } = require("./_lib/sheet");
+const { getCurrentState, parseKilometerValue } = require("./_lib/sheet");
 
 module.exports = async (req, res) => {
   if (req.method !== "POST") {
@@ -16,7 +16,7 @@ module.exports = async (req, res) => {
 
   try {
     const body = typeof req.body === "string" ? JSON.parse(req.body) : req.body || {};
-    const endOdometer = Number(body.endOdometer);
+    const endOdometer = parseKilometerValue(body.endOdometer);
     const from = clean(body.from);
     const to = clean(body.to);
     const driverName = clean(body.driverName);

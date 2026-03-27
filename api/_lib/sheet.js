@@ -151,4 +151,5 @@ module.exports = {
   getCurrentState,
   getAppsScriptUrl,
   getPublicTsvUrl,
+  parseKilometerValue,
 };

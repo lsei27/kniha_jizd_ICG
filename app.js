@@ -4,6 +4,12 @@ const state = {
   auto: new URLSearchParams(window.location.search).get("auto"),
 };
 
+function cleanNumberInput(value) {
+  if (typeof value !== "string") return value;
+  // Remove spaces and replace comma with dot
+  return value.replace(/\s+/g, "").replace(",", ".");
+}
+
 const storageKey = "kniha-jizd.driver-name";
 const timestampFormatter = new Intl.DateTimeFormat("cs-CZ", {
   dateStyle: "medium",
@@ -87,7 +93,8 @@ async function handleSubmit(event) {
     return;
   }
 
-  const endOdometer = Number(endOdometerInput.value);
+  const endOdometerVal = cleanNumberInput(endOdometerInput.value);
+  const endOdometer = Number(endOdometerVal);
   const payload = {
     endOdometer,
     from: fromInput.value.trim(),
@@ -162,7 +169,8 @@ async function handleSubmit(event) {
 }
 
 function updateDistancePreview() {
-  const endOdometer = Number(endOdometerInput.value);
+  const val = cleanNumberInput(endOdometerInput.value);
+  const endOdometer = Number(val);
 
   if (!Number.isFinite(endOdometer) || !Number.isFinite(state.currentOdometer)) {
     distancePreviewNode.textContent = "-";
