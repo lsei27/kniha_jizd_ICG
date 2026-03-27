@@ -1,6 +1,7 @@
 const state = {
   currentOdometer: null,
   isSubmitting: false,
+  auto: new URLSearchParams(window.location.search).get("auto"),
 };
 
 const storageKey = "kniha-jizd.driver-name";
@@ -26,6 +27,12 @@ const formMessage = document.querySelector("#form-message");
 boot();
 
 async function boot() {
+  if (state.auto) {
+    const carName = state.auto.replace(/_/g, " ");
+    const h1 = document.querySelector(".hero h1");
+    if (h1) h1.textContent = carName;
+  }
+
   currentTimestampNode.textContent = timestampFormatter.format(new Date());
 
   const storedName = window.localStorage.getItem(storageKey);
@@ -44,7 +51,10 @@ async function loadCurrentState() {
   setMessage("Načítám poslední stav z tabulky…");
 
   try {
-    const response = await fetch("/api/state");
+    const url = new URL("/api/state", window.location.origin);
+    if (state.auto) url.searchParams.set("auto", state.auto);
+
+    const response = await fetch(url);
     const payload = await response.json();
 
     if (!response.ok) {
@@ -79,6 +89,7 @@ async function handleSubmit(event) {
     to: toInput.value.trim(),
     driverName: driverNameInput.value.trim(),
     reason: reasonInput.value.trim(),
+    auto: state.auto,
   };
 
   if (!state.currentOdometer && state.currentOdometer !== 0) {

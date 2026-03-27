@@ -1,5 +1,5 @@
-const SHEET_NAME = 'Sheet1';
-const SCRIPT_SHARED_SECRET = '';
+const DEFAULT_SHEET_NAME = 'Buzzik';
+const SCRIPT_SHARED_SECRET = 'ICG_kniha_jizd';
 
 function doPost(e) {
   const lock = LockService.getScriptLock();
@@ -13,7 +13,8 @@ function doPost(e) {
       return jsonResponse({ ok: false, error: 'Unauthorized request.' });
     }
 
-    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+    const sheetName = payload.sheetName || DEFAULT_SHEET_NAME;
+    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
 
     if (!sheet) {
       return jsonResponse({ ok: false, error: 'Sheet nebyl nalezen. Upravte SHEET_NAME.' });
@@ -65,7 +66,7 @@ function doPost(e) {
 
 function doGet(e) {
   if (e && e.parameter && e.parameter.mode === 'state') {
-    return handleStateRequest_();
+    return handleStateRequest_(e.parameter.sheetName || DEFAULT_SHEET_NAME);
   }
 
   return jsonResponse({ ok: true, service: 'kniha-jizd-writer' });
@@ -94,11 +95,11 @@ function getCurrentOdometer_(sheet) {
   throw new Error('V tabulce nebyl nalezen platný počáteční stav tachometru.');
 }
 
-function handleStateRequest_() {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+function handleStateRequest_(sheetName) {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
 
   if (!sheet) {
-    return jsonResponse({ ok: false, error: 'Sheet nebyl nalezen. Upravte SHEET_NAME.' });
+    return jsonResponse({ ok: false, error: 'Sheet "' + sheetName + '" nebyl nalezen.' });
   }
 
   const lastRowIndex = Math.max(sheet.getLastRow(), 2);

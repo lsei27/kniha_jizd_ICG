@@ -7,7 +7,8 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const { currentOdometer, lastRow } = await getCurrentState();
+    const auto = req.query.auto;
+    const { currentOdometer, lastRow } = await getCurrentState(auto);
 
     res.status(200).json({
       currentOdometer,

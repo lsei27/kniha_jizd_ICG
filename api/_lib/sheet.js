@@ -42,9 +42,9 @@ async function fetchSheetRows() {
   return rows;
 }
 
-async function getCurrentState() {
+async function getCurrentState(sheetName) {
   if (getAppsScriptUrl()) {
-    return getCurrentStateFromAppsScript();
+    return getCurrentStateFromAppsScript(sheetName);
   }
 
   const rows = await fetchSheetRows();
@@ -68,9 +68,12 @@ async function getCurrentState() {
   };
 }
 
-async function getCurrentStateFromAppsScript() {
+async function getCurrentStateFromAppsScript(sheetName) {
   const url = new URL(getAppsScriptUrl());
   url.searchParams.set("mode", "state");
+  if (sheetName) {
+    url.searchParams.set("sheetName", sheetName);
+  }
   url.searchParams.set("_", Date.now().toString());
 
   const response = await fetch(url, {

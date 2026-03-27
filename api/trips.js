@@ -33,9 +33,10 @@ module.exports = async (req, res) => {
     }
 
     const createdAtIso = new Date().toISOString();
+    const auto = body.auto || req.query.auto;
 
     // Public TSV is used only as a soft pre-check for better UX.
-    const { currentOdometer } = await getCurrentState();
+    const { currentOdometer } = await getCurrentState(auto);
     if (endOdometer < currentOdometer) {
       res.status(400).json({
         error: "Koncový stav tachometru nesmí být menší než poslední stav v tabulce.",
@@ -55,6 +56,7 @@ module.exports = async (req, res) => {
         to,
         driverName,
         reason,
+        sheetName: auto,
         secret: process.env.APPS_SCRIPT_SHARED_SECRET || "",
       }),
     });
