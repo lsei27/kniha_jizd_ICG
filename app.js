@@ -27,11 +27,9 @@ const formMessage = document.querySelector("#form-message");
 boot();
 
 async function boot() {
-  if (state.auto) {
-    const carName = state.auto.replace(/_/g, " ");
-    const h1 = document.querySelector(".hero h1");
-    if (h1) h1.textContent = carName;
-  }
+  const carName = state.auto ? state.auto.replace(/_/g, " ") : "Buzzik";
+  const h1 = document.querySelector(".hero h1");
+  if (h1) h1.textContent = carName;
 
   currentTimestampNode.textContent = timestampFormatter.format(new Date());
 
