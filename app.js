@@ -44,6 +44,13 @@ async function boot() {
   driverNameInput.addEventListener("change", persistDriverName);
   form.addEventListener("submit", handleSubmit);
 
+  window.addEventListener("beforeunload", (event) => {
+    if (state.isSubmitting) {
+      event.preventDefault();
+      event.returnValue = "";
+    }
+  });
+
   await loadCurrentState();
 }
 
@@ -142,14 +149,17 @@ async function handleSubmit(event) {
     toInput.value = "";
     reasonInput.value = "";
 
-    setMessage(
-      `Zapsáno. Uloženo ${result.record.distanceKm} km pro řidiče ${result.record.driverName}.`,
-      "success",
-    );
+    setSubmitting(true, true);
+    setTimeout(() => {
+      setSubmitting(false);
+      setMessage(
+        `Zapsáno. Uloženo ${result.record.distanceKm} km pro řidiče ${result.record.driverName}.`,
+        "success",
+      );
+    }, 2000);
   } catch (error) {
-    setMessage(error.message, "error");
-  } finally {
     setSubmitting(false);
+    setMessage(error.message, "error");
   }
 }
 
@@ -173,9 +183,31 @@ function persistDriverName() {
   }
 }
 
-function setSubmitting(isSubmitting) {
+function setSubmitting(isSubmitting, isSuccess = false) {
   state.isSubmitting = isSubmitting;
   submitButton.disabled = isSubmitting;
+
+  const loaderOverlay = document.getElementById("loader-overlay");
+  const loaderText = document.getElementById("loader-text");
+  const spinner = loaderOverlay?.querySelector(".spinner");
+  const successIcon = loaderOverlay?.querySelector(".success-icon");
+
+  if (loaderOverlay) {
+    loaderOverlay.hidden = !isSubmitting;
+    loaderOverlay.setAttribute("aria-hidden", !isSubmitting);
+
+    if (isSubmitting) {
+      if (isSuccess) {
+        if (spinner) spinner.hidden = true;
+        if (successIcon) successIcon.hidden = false;
+        if (loaderText) loaderText.textContent = "Zapsáno v pořádku!";
+      } else {
+        if (spinner) spinner.hidden = false;
+        if (successIcon) successIcon.hidden = true;
+        if (loaderText) loaderText.textContent = "Zapisuji do tabulky…";
+      }
+    }
+  }
 }
 
 function setMessage(message, type = "") {
