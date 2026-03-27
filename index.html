@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="cs">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Kniha jízd</title>
+    <meta
+      name="description"
+      content="Rychlé zadání jízdy do knihy jízd s automatickým dopočtem kilometrů."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <main class="app-card">
+        <section class="hero">
+          <p class="eyebrow">Firemní vůz</p>
+          <h1>Kniha jízd bez papíru</h1>
+          <p class="intro">
+            Po jízdě vyplňte jen to nutné. Aplikace sama načte poslední stav tachometru,
+            doplní datum a čas a připraví zápis do tabulky.
+          </p>
+        </section>
+
+        <section class="status-panel" aria-live="polite">
+          <div class="status-item">
+            <span class="status-label">Poslední stav tachometru</span>
+            <strong id="current-odometer">Načítám…</strong>
+          </div>
+          <div class="status-item">
+            <span class="status-label">Datum a čas zápisu</span>
+            <strong id="current-timestamp">Načítám…</strong>
+          </div>
+        </section>
+
+        <form id="trip-form" class="trip-form" novalidate>
+          <label class="field">
+            <span>Koncový stav tachometru</span>
+            <input
+              id="end-odometer"
+              name="endOdometer"
+              type="number"
+              inputmode="numeric"
+              min="0"
+              step="1"
+              placeholder="Např. 123842"
+              required
+            />
+          </label>
+
+          <div class="field-grid">
+            <label class="field">
+              <span>Odkud</span>
+              <input id="from" name="from" type="text" placeholder="Např. Praha" required />
+            </label>
+
+            <label class="field">
+              <span>Kam</span>
+              <input id="to" name="to" type="text" placeholder="Např. Brno" required />
+            </label>
+          </div>
+
+          <div class="field-grid">
+            <label class="field">
+              <span>Jméno</span>
+              <input
+                id="driver-name"
+                name="driverName"
+                type="text"
+                autocomplete="name"
+                placeholder="Např. Jan Novák"
+                required
+              />
+            </label>
+
+            <label class="field">
+              <span>Důvod cesty</span>
+              <input
+                id="reason"
+                name="reason"
+                type="text"
+                placeholder="Např. Servis / obchodní schůzka"
+                required
+              />
+            </label>
+          </div>
+
+          <section class="summary-panel">
+            <div>
+              <span class="status-label">Počáteční stav</span>
+              <strong id="start-preview">-</strong>
+            </div>
+            <div>
+              <span class="status-label">Odhad ujetých km</span>
+              <strong id="distance-preview">-</strong>
+            </div>
+          </section>
+
+          <p id="form-message" class="form-message" aria-live="polite"></p>
+
+          <button id="submit-button" class="submit-button" type="submit">
+            Zapsat jízdu do tabulky
+          </button>
+        </form>
+      </main>
+    </div>
+
+    <script src="/app.js" defer></script>
+  </body>
+</html>

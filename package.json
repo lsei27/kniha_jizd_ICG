@@ -1,0 +1,12 @@
+{
+  "name": "kniha-jizd",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Jednoducha aplikace pro zapis jizd do Google Sheets",
+  "scripts": {
+    "check": "node --check app.js && node --check api/_lib/sheet.js && node --check api/state.js && node --check api/trips.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
