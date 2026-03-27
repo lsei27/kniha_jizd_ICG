@@ -114,8 +114,13 @@ async function handleSubmit(event) {
     return;
   }
 
-  if (endOdometer < state.currentOdometer) {
-    setMessage("Koncový stav tachometru nesmí být menší než poslední stav v tabulce.", "error");
+  if (endOdometer <= state.currentOdometer) {
+    setMessage(
+      `Koncový stav tachometru musí být vyšší než poslední stav v tabulce (${formatKilometers(
+        state.currentOdometer
+      )}).`,
+      "error"
+    );
     return;
   }
 
