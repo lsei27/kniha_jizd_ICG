@@ -1,17 +1,17 @@
 :root {
-  --bg: #f3efe5;
-  --card: rgba(255, 251, 244, 0.84);
-  --card-border: rgba(88, 56, 36, 0.12);
-  --text: #1f1712;
-  --muted: #6d5c53;
-  --accent: #b6512f;
-  --accent-strong: #8d3d22;
-  --accent-soft: rgba(182, 81, 47, 0.12);
-  --success: #1e6b47;
-  --error: #b42318;
-  --shadow: 0 24px 80px rgba(58, 36, 25, 0.18);
-  --radius-xl: 28px;
-  --radius-lg: 18px;
+  --bg: #090909;
+  --card: #1A171B;
+  --card-border: #4E4E50;
+  --text: #F4F4F4;
+  --muted: #F1F1F1;
+  --accent: #E53137;
+  --accent-strong: #E53137;
+  --accent-soft: rgba(229, 49, 55, 0.12);
+  --success: #1ED760;
+  --error: #E53137;
+  --shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
+  --radius-xl: 32px;
+  --radius-lg: 20px;
 }
 
 * {
@@ -25,12 +25,12 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  font-family: "Manrope", sans-serif;
+  font-family: "Satoshi", sans-serif;
   color: var(--text);
   background:
-    radial-gradient(circle at top left, rgba(255, 208, 145, 0.6), transparent 34%),
-    radial-gradient(circle at bottom right, rgba(181, 120, 62, 0.25), transparent 28%),
-    linear-gradient(135deg, #efe4d3 0%, #f8f5ee 52%, #dfd4c4 100%);
+    radial-gradient(circle at top left, rgba(229, 49, 55, 0.08), transparent 45%),
+    radial-gradient(circle at bottom right, rgba(78, 78, 80, 0.1), transparent 35%),
+    var(--bg);
 }
 
 body::before {
@@ -39,10 +39,10 @@ body::before {
   inset: 0;
   pointer-events: none;
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.14) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.14) 1px, transparent 1px);
-  background-size: 30px 30px;
-  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), transparent 70%);
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  mask-image: radial-gradient(circle at center, black, transparent 80%);
 }
 
 .page-shell {
@@ -54,12 +54,12 @@ body::before {
 
 .app-card {
   width: min(100%, 720px);
-  padding: 28px;
+  padding: 40px;
   border: 1px solid var(--card-border);
   border-radius: var(--radius-xl);
   background: var(--card);
   box-shadow: var(--shadow);
-  backdrop-filter: blur(18px);
+  backdrop-filter: blur(24px);
 }
 
 .hero {
@@ -77,9 +77,10 @@ body::before {
 
 .hero h1 {
   margin: 0;
-  font-family: "Fraunces", serif;
+  font-family: "Satoshi", sans-serif;
   font-size: clamp(2.4rem, 7vw, 4rem);
-  line-height: 0.95;
+  line-height: 1;
+  font-weight: 900;
   letter-spacing: -0.04em;
 }
 
@@ -101,11 +102,10 @@ body::before {
 
 .status-item,
 .summary-panel > div {
-  padding: 16px 18px;
+  padding: 20px 22px;
   border-radius: var(--radius-lg);
-  border: 1px solid rgba(88, 56, 36, 0.08);
-  background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.72), rgba(249, 240, 228, 0.86));
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .status-label {
@@ -143,10 +143,10 @@ body::before {
 
 .field input {
   width: 100%;
-  border: 1px solid rgba(88, 56, 36, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
   padding: 16px 18px;
-  background: rgba(255, 255, 255, 0.86);
+  background: rgba(0, 0, 0, 0.2);
   color: var(--text);
   font: inherit;
   transition:
@@ -157,13 +157,13 @@ body::before {
 
 .field input:focus {
   outline: none;
-  border-color: rgba(182, 81, 47, 0.65);
-  box-shadow: 0 0 0 4px rgba(182, 81, 47, 0.14);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-soft);
   transform: translateY(-1px);
 }
 
 .field input::placeholder {
-  color: #a18f84;
+  color: #4E4E50;
 }
 
 .summary-panel {
@@ -190,15 +190,14 @@ body::before {
   appearance: none;
   border: 0;
   border-radius: 999px;
-  padding: 18px 22px;
-  background:
-    linear-gradient(135deg, var(--accent) 0%, #d06f44 70%, #e99659 100%);
-  color: #fff8f2;
+  padding: 20px 24px;
+  background: var(--accent);
+  color: #fff;
   font: inherit;
   font-weight: 800;
   letter-spacing: 0.01em;
   cursor: pointer;
-  box-shadow: 0 16px 34px rgba(182, 81, 47, 0.28);
+  box-shadow: 0 16px 34px rgba(229, 49, 55, 0.2);
   transition:
     transform 140ms ease,
     box-shadow 140ms ease,
@@ -207,14 +206,14 @@ body::before {
 
 .submit-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 20px 36px rgba(182, 81, 47, 0.34);
+  box-shadow: 0 20px 36px rgba(229, 49, 55, 0.3);
 }
 
 .submit-button:disabled {
   cursor: wait;
   opacity: 0.72;
   transform: none;
-  box-shadow: 0 10px 24px rgba(182, 81, 47, 0.16);
+  box-shadow: none;
 }
 
 @media (max-width: 640px) {
