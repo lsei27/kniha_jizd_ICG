@@ -286,7 +286,7 @@ body::before {
 .success-icon {
   width: 64px;
   height: 64px;
-  background: var(--accent);
+  background: #10b981;
   color: #fff;
   border-radius: 50%;
   display: grid;
