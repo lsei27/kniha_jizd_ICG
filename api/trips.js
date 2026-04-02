@@ -18,6 +18,7 @@ module.exports = async (req, res) => {
     const body = typeof req.body === "string" ? JSON.parse(req.body) : req.body || {};
     const endOdometer = parseKilometerValue(body.endOdometer);
     const from = clean(body.from);
+    const via = clean(body.via);
     const to = clean(body.to);
     const driverName = clean(body.driverName);
     const reason = clean(body.reason);
@@ -27,7 +28,7 @@ module.exports = async (req, res) => {
       return;
     }
 
-    if (!from || !to || !driverName || !reason) {
+    if (!from || !via || !to || !driverName || !reason) {
       res.status(400).json({ error: "Všechna pole jsou povinná." });
       return;
     }
@@ -53,6 +54,7 @@ module.exports = async (req, res) => {
         createdAtIso,
         endOdometer,
         from,
+        via,
         to,
         driverName,
         reason,

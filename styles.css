@@ -140,6 +140,10 @@ body::before {
   gap: 14px;
 }
 
+.trip-flow-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .field {
   display: grid;
   gap: 8px;

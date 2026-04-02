@@ -20,6 +20,7 @@ const timestampFormatter = new Intl.DateTimeFormat("cs-CZ", {
 const form = document.querySelector("#trip-form");
 const endOdometerInput = document.querySelector("#end-odometer");
 const fromInput = document.querySelector("#from");
+const viaInput = document.querySelector("#via");
 const toInput = document.querySelector("#to");
 const driverNameInput = document.querySelector("#driver-name");
 const reasonInput = document.querySelector("#reason");
@@ -43,6 +44,10 @@ async function boot() {
   if (storedName) {
     driverNameInput.value = storedName;
   }
+
+  // Pre-fill journey defaults
+  if (!fromInput.value) fromInput.value = "Liboc";
+  if (!toInput.value) toInput.value = "Liboc";
 
   endOdometerInput.addEventListener("input", updateDistancePreview);
   driverNameInput.addEventListener("change", persistDriverName);
@@ -98,6 +103,7 @@ async function handleSubmit(event) {
   const payload = {
     endOdometer,
     from: fromInput.value.trim(),
+    via: viaInput.value.trim(),
     to: toInput.value.trim(),
     driverName: driverNameInput.value.trim(),
     reason: reasonInput.value.trim(),
@@ -124,7 +130,7 @@ async function handleSubmit(event) {
     return;
   }
 
-  if (!payload.from || !payload.to || !payload.driverName || !payload.reason) {
+  if (!payload.from || !payload.via || !payload.to || !payload.driverName || !payload.reason) {
     setMessage("Vyplňte prosím všechna pole formuláře.", "error");
     return;
   }
@@ -155,8 +161,9 @@ async function handleSubmit(event) {
     distancePreviewNode.textContent = "0 km";
 
     endOdometerInput.value = "";
-    fromInput.value = "";
-    toInput.value = "";
+    fromInput.value = "Liboc";
+    viaInput.value = "";
+    toInput.value = "Liboc";
     reasonInput.value = "";
 
     setSubmitting(true, true);

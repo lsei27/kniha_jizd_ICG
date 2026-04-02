@@ -39,6 +39,7 @@ function doPost(e) {
       record.date,
       record.startTime,
       record.from,
+      record.via,
       record.to,
       record.startOdometer,
       record.distanceKm,
@@ -80,9 +81,9 @@ function jsonResponse(payload) {
 
 function getCurrentOdometer_(sheet) {
   const lastRow = Math.max(sheet.getLastRow(), 2);
-  const values = sheet.getRange(lastRow, 1, 1, 10).getValues()[0];
-  const endOdometer = parseKilometerValue_(values[7]);
-  const startOdometer = parseKilometerValue_(values[4]);
+  const values = sheet.getRange(lastRow, 1, 1, 11).getValues()[0];
+  const endOdometer = parseKilometerValue_(values[8]);
+  const startOdometer = parseKilometerValue_(values[5]);
 
   if (isFinite(endOdometer)) {
     return endOdometer;
@@ -110,7 +111,7 @@ function handleStateRequest_(sheetName) {
   }
 
   const lastRowIndex = Math.max(sheet.getLastRow(), 2);
-  const values = sheet.getRange(lastRowIndex, 1, 1, 10).getValues()[0];
+  const values = sheet.getRange(lastRowIndex, 1, 1, 11).getValues()[0];
   const currentOdometer = getCurrentOdometer_(sheet);
 
   return jsonResponse({
@@ -120,13 +121,14 @@ function handleStateRequest_(sheetName) {
       'DAT.': values[0],
       'ČAS': values[1],
       'ODKUD': values[2],
-      'KAM': values[3],
-      'STAV TACH.': values[4],
-      'UJETÉ KM': values[5],
-      'ČAS UKONČ.': values[6],
-      'TACH. UKONČ.': values[7],
-      'DŮVOD': values[8],
-      'KDO': values[9],
+      'PŘES': values[3],
+      'KONEC': values[4],
+      'STAV TACH.': values[5],
+      'UJETÉ KM': values[6],
+      'ČAS UKONČ.': values[7],
+      'TACH. UKONČ.': values[8],
+      'DŮVOD': values[9],
+      'KDO': values[10],
     },
   });
 }
@@ -142,6 +144,7 @@ function createRecord_(payload, currentOdometer, endOdometer) {
     date: date,
     startTime: time,
     from: String(payload.from || '').trim(),
+    via: String(payload.via || '').trim(),
     to: String(payload.to || '').trim(),
     startOdometer: currentOdometer,
     distanceKm: endOdometer - currentOdometer,
