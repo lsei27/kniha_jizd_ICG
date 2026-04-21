@@ -7,6 +7,6 @@
     "check": "node --check app.js && node --check api/_lib/sheet.js && node --check api/state.js && node --check api/trips.js"
   },
   "engines": {
-    "node": "22.x"
+    "node": "24.x"
   }
 }
