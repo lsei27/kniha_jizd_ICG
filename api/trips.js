@@ -1,21 +1,24 @@
-const { getCurrentState, parseKilometerValue } = require("./_lib/sheet");
+import { getCurrentState, parseKilometerValue } from "./_lib/sheet.js";
 
-module.exports = async (req, res) => {
-  if (req.method !== "POST") {
-    res.status(405).json({ error: "Použijte POST." });
-    return;
-  }
-
+export async function POST(request) {
   if (!process.env.GOOGLE_APPS_SCRIPT_URL) {
-    res.status(500).json({
-      error:
-        "Chybí GOOGLE_APPS_SCRIPT_URL. Nejdřív nasaďte Apps Script a doplňte jeho URL do Vercel environment variables.",
-    });
-    return;
+    return Response.json(
+      {
+        error:
+          "Chybí GOOGLE_APPS_SCRIPT_URL. Nejdřív nasaďte Apps Script a doplňte jeho URL do Vercel environment variables.",
+      },
+      { status: 500 },
+    );
   }
 
   try {
-    const body = typeof req.body === "string" ? JSON.parse(req.body) : req.body || {};
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      body = {};
+    }
+
     const endOdometer = parseKilometerValue(body.endOdometer);
     const from = clean(body.from);
     const via = clean(body.via);
@@ -24,25 +27,29 @@ module.exports = async (req, res) => {
     const reason = clean(body.reason);
 
     if (!Number.isFinite(endOdometer)) {
-      res.status(400).json({ error: "Koncový stav tachometru musí být číslo." });
-      return;
+      return Response.json(
+        { error: "Koncový stav tachometru musí být číslo." },
+        { status: 400 },
+      );
     }
 
     if (!from || !via || !to || !driverName || !reason) {
-      res.status(400).json({ error: "Všechna pole jsou povinná." });
-      return;
+      return Response.json(
+        { error: "Všechna pole jsou povinná." },
+        { status: 400 },
+      );
     }
 
     const createdAtIso = new Date().toISOString();
-    const auto = body.auto || req.query.auto;
+    const auto = body.auto || new URL(request.url).searchParams.get("auto") || undefined;
 
     // Public TSV is used only as a soft pre-check for better UX.
     const { currentOdometer } = await getCurrentState(auto);
     if (endOdometer < currentOdometer) {
-      res.status(400).json({
-        error: "Koncový stav tachometru nesmí být menší než poslední stav v tabulce.",
-      });
-      return;
+      return Response.json(
+        { error: "Koncový stav tachometru nesmí být menší než poslední stav v tabulce." },
+        { status: 400 },
+      );
     }
 
     const upstreamResponse = await fetch(process.env.GOOGLE_APPS_SCRIPT_URL, {
@@ -73,32 +80,34 @@ module.exports = async (req, res) => {
     }
 
     if (!upstreamResponse.ok || upstreamPayload.ok === false) {
-      res.status(502).json({
-        error: upstreamPayload.error || "Google Apps Script zápis odmítl.",
-        upstream: upstreamPayload,
-      });
-      return;
+      return Response.json(
+        {
+          error: upstreamPayload.error || "Google Apps Script zápis odmítl.",
+          upstream: upstreamPayload,
+        },
+        { status: 502 },
+      );
     }
 
     if (!upstreamPayload.record) {
-      res.status(502).json({
-        error: "Google Apps Script nevrátil zapsaný záznam.",
-        upstream: upstreamPayload,
-      });
-      return;
+      return Response.json(
+        {
+          error: "Google Apps Script nevrátil zapsaný záznam.",
+          upstream: upstreamPayload,
+        },
+        { status: 502 },
+      );
     }
 
-    res.status(200).json({
+    return Response.json({
       ok: true,
       record: upstreamPayload.record,
       upstream: upstreamPayload,
     });
   } catch (error) {
-    res.status(500).json({
-      error: error.message,
-    });
+    return Response.json({ error: error.message }, { status: 500 });
   }
-};
+}
 
 function clean(value) {
   return typeof value === "string" ? value.trim() : "";

@@ -146,7 +146,7 @@ function formatTime(date) {
   }).format(date);
 }
 
-module.exports = {
+export {
   createRecord,
   getCurrentState,
   getAppsScriptUrl,

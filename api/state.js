@@ -1,23 +1,16 @@
-const { getCurrentState } = require("./_lib/sheet");
+import { getCurrentState } from "./_lib/sheet.js";
 
-module.exports = async (req, res) => {
-  if (req.method !== "GET") {
-    res.status(405).json({ error: "Použijte GET." });
-    return;
-  }
-
+export async function GET(request) {
   try {
-    const auto = req.query.auto;
+    const auto = new URL(request.url).searchParams.get("auto") || undefined;
     const { currentOdometer, lastRow } = await getCurrentState(auto);
 
-    res.status(200).json({
+    return Response.json({
       currentOdometer,
       timestamp: new Date().toISOString(),
       lastRow,
     });
   } catch (error) {
-    res.status(500).json({
-      error: error.message,
-    });
+    return Response.json({ error: error.message }, { status: 500 });
   }
-};
+}
