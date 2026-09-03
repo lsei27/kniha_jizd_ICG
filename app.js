@@ -24,6 +24,7 @@ const viaInput = document.querySelector("#via");
 const toInput = document.querySelector("#to");
 const driverNameInput = document.querySelector("#driver-name");
 const reasonInput = document.querySelector("#reason");
+const issueReportInput = document.querySelector("#issue-report");
 const currentOdometerNode = document.querySelector("#current-odometer");
 const currentTimestampNode = document.querySelector("#current-timestamp");
 const startPreviewNode = document.querySelector("#start-preview");
@@ -107,6 +108,7 @@ async function handleSubmit(event) {
     to: toInput.value.trim(),
     driverName: driverNameInput.value.trim(),
     reason: reasonInput.value.trim(),
+    issueReport: issueReportInput.value.trim(),
     auto: state.auto,
   };
 
@@ -165,6 +167,7 @@ async function handleSubmit(event) {
     viaInput.value = "";
     toInput.value = "Liboc";
     reasonInput.value = "";
+    issueReportInput.value = "";
 
     setSubmitting(true, true);
     setTimeout(() => {

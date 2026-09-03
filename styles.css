@@ -154,7 +154,8 @@ body::before {
   font-weight: 700;
 }
 
-.field input {
+.field input,
+.field textarea {
   width: 100%;
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
@@ -168,14 +169,27 @@ body::before {
     box-shadow 140ms ease;
 }
 
-.field input:focus {
+.field textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+
+.field small {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+.field input:focus,
+.field textarea:focus {
   outline: none;
   border-color: var(--accent);
   box-shadow: 0 0 0 4px var(--accent-soft);
   transform: translateY(-1px);
 }
 
-.field input::placeholder {
+.field input::placeholder,
+.field textarea::placeholder {
   color: #4E4E50;
 }
 

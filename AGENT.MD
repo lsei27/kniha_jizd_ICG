@@ -9,6 +9,7 @@ Jednoduchá webová aplikace pro knihu jízd. Uživatel po jízdě vyplní:
 - kam
 - jméno řidiče
 - důvod cesty
+- závady / hlášení (nepovinné)
 
 Aplikace automaticky:
 
@@ -86,18 +87,14 @@ Potřebné environment variables:
 - `GOOGLE_APPS_SCRIPT_URL`
 - `APPS_SCRIPT_SHARED_SECRET`
 
-Aktuálně se používá shared secret:
-
-- `ICG_kniha_jizd`
-
 Po změně environment variables na Vercelu je nutný `Redeploy`.
 
 ### Google Apps Script
 
-Aktuální produkční nastavení v kódu:
+Aktuální produkční nastavení:
 
-- `SHEET_NAME = 'Buzzik'`
-- `SCRIPT_SHARED_SECRET = 'ICG_kniha_jizd'`
+- `DEFAULT_SHEET_NAME = 'Buzzik'`
+- `SCRIPT_SHARED_SECRET` je nastavený přímo v Apps Scriptu a odpovídá hodnotě ve Vercelu
 
 Po změně kódu v Apps Scriptu nestačí jen uložit. Je nutné:
 
