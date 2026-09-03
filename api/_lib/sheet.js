@@ -108,7 +108,16 @@ function parseKilometerValue(value) {
   return Number(normalized);
 }
 
-function createRecord({ currentOdometer, endOdometer, from, to, driverName, reason }) {
+function createRecord({
+  currentOdometer,
+  endOdometer,
+  from,
+  via,
+  to,
+  driverName,
+  reason,
+  issueReport,
+}) {
   const now = new Date();
   const date = formatDate(now);
   const time = formatTime(now);
@@ -119,6 +128,7 @@ function createRecord({ currentOdometer, endOdometer, from, to, driverName, reas
     date,
     startTime: time,
     from,
+    via,
     to,
     startOdometer: currentOdometer,
     distanceKm,
@@ -126,6 +136,7 @@ function createRecord({ currentOdometer, endOdometer, from, to, driverName, reas
     endOdometer,
     reason,
     driverName,
+    issueReport,
   };
 }
 

@@ -1,5 +1,6 @@
 const DEFAULT_SHEET_NAME = 'Buzzik';
 const SCRIPT_SHARED_SECRET = 'ICG_kniha_jizd';
+const ISSUE_REPORT_HEADER = 'ZÁVADY / HLÁŠENÍ';
 
 function doPost(e) {
   const lock = LockService.getScriptLock();
@@ -9,7 +10,7 @@ function doPost(e) {
 
     const payload = JSON.parse(e.postData.contents || '{}');
 
-    if (SCRIPT_SHARED_SECRET && payload.secret !== SCRIPT_SHARED_SECRET) {
+    if (payload.secret !== SCRIPT_SHARED_SECRET) {
       return jsonResponse({ ok: false, error: 'Unauthorized request.' });
     }
 
@@ -19,6 +20,8 @@ function doPost(e) {
     if (!sheet) {
       return jsonResponse({ ok: false, error: 'Sheet nebyl nalezen. Upravte SHEET_NAME.' });
     }
+
+    ensureIssueReportColumn_(sheet);
 
     const currentOdometer = getCurrentOdometer_(sheet);
     const endOdometer = Number(payload.endOdometer);
@@ -47,6 +50,7 @@ function doPost(e) {
       record.endOdometer,
       record.reason,
       record.driverName,
+      record.issueReport,
     ];
 
     sheet.appendRow(row);
@@ -81,7 +85,7 @@ function jsonResponse(payload) {
 
 function getCurrentOdometer_(sheet) {
   const lastRow = Math.max(sheet.getLastRow(), 2);
-  const values = sheet.getRange(lastRow, 1, 1, 11).getValues()[0];
+  const values = sheet.getRange(lastRow, 1, 1, 12).getValues()[0];
   const endOdometer = parseKilometerValue_(values[8]);
   const startOdometer = parseKilometerValue_(values[5]);
 
@@ -111,7 +115,7 @@ function handleStateRequest_(sheetName) {
   }
 
   const lastRowIndex = Math.max(sheet.getLastRow(), 2);
-  const values = sheet.getRange(lastRowIndex, 1, 1, 11).getValues()[0];
+  const values = sheet.getRange(lastRowIndex, 1, 1, 12).getValues()[0];
   const currentOdometer = getCurrentOdometer_(sheet);
 
   return jsonResponse({
@@ -129,6 +133,7 @@ function handleStateRequest_(sheetName) {
       'TACH. UKONČ.': values[8],
       'DŮVOD': values[9],
       'KDO': values[10],
+      'ZÁVADY / HLÁŠENÍ': values[11],
     },
   });
 }
@@ -143,14 +148,39 @@ function createRecord_(payload, currentOdometer, endOdometer) {
     createdAtIso: createdAt.toISOString(),
     date: date,
     startTime: time,
-    from: String(payload.from || '').trim(),
-    via: String(payload.via || '').trim(),
-    to: String(payload.to || '').trim(),
+    from: sanitizeSheetText_(payload.from),
+    via: sanitizeSheetText_(payload.via),
+    to: sanitizeSheetText_(payload.to),
     startOdometer: currentOdometer,
     distanceKm: endOdometer - currentOdometer,
     endTime: time,
     endOdometer: endOdometer,
-    reason: String(payload.reason || '').trim(),
-    driverName: String(payload.driverName || '').trim(),
+    reason: sanitizeSheetText_(payload.reason),
+    driverName: sanitizeSheetText_(payload.driverName),
+    issueReport: sanitizeSheetText_(payload.issueReport).slice(0, 1000),
   };
+}
+
+function ensureIssueReportColumn_(sheet) {
+  const headerCell = sheet.getRange(1, 12);
+  const currentHeader = String(headerCell.getValue() || '').trim();
+
+  if (!currentHeader) {
+    headerCell.setValue(ISSUE_REPORT_HEADER);
+    return;
+  }
+
+  const normalizedHeader = currentHeader.toUpperCase().replace(/\s+/g, '');
+  const normalizedExpectedHeader = ISSUE_REPORT_HEADER.toUpperCase().replace(/\s+/g, '');
+
+  if (normalizedHeader !== normalizedExpectedHeader) {
+    throw new Error(
+      'Sloupec L je obsazený. Přejmenujte jeho záhlaví na "' + ISSUE_REPORT_HEADER + '".',
+    );
+  }
+}
+
+function sanitizeSheetText_(value) {
+  const text = String(value || '').trim();
+  return /^[=+\-@]/.test(text) ? "'" + text : text;
 }

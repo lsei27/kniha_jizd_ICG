@@ -25,6 +25,7 @@ export async function POST(request) {
     const to = clean(body.to);
     const driverName = clean(body.driverName);
     const reason = clean(body.reason);
+    const issueReport = clean(body.issueReport);
 
     if (!Number.isFinite(endOdometer)) {
       return Response.json(
@@ -36,6 +37,13 @@ export async function POST(request) {
     if (!from || !via || !to || !driverName || !reason) {
       return Response.json(
         { error: "Všechna pole jsou povinná." },
+        { status: 400 },
+      );
+    }
+
+    if (issueReport.length > 1000) {
+      return Response.json(
+        { error: "Závady / hlášení mohou obsahovat nejvýše 1000 znaků." },
         { status: 400 },
       );
     }
@@ -65,6 +73,7 @@ export async function POST(request) {
         to,
         driverName,
         reason,
+        issueReport,
         sheetName: auto,
         secret: process.env.APPS_SCRIPT_SHARED_SECRET || "",
       }),
